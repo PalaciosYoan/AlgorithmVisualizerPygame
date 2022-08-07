@@ -4,7 +4,7 @@ from MapCreatorPygame.BinarySearchMapGenerator import *
 
 def main():
     map = BinarySearchMapGenerator()
-    print(binarySearch(map, 2))
+    print(binarySearch(map, 1))
 
 if __name__ == "__main__":
     main()

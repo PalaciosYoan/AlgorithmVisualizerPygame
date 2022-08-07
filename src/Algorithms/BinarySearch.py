@@ -15,7 +15,7 @@ def binarySearch(mapArr, target):
 
         # If x is smaller, ignore right half
         elif mapArr.getArrayAtMid() > target:
-            mapArr.setRight(mapArr.getMid() + 1)
+            mapArr.setRight(mapArr.getMid() - 1)
 
         # means x is present at mid
         else:

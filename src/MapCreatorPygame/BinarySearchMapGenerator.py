@@ -32,6 +32,9 @@ class BinarySearchMapGenerator(object):
     def getArray(self):
         return self._array
     
+    def getArrayAtMid(self):
+        return self._array[self._mid]
+    
     def setLeft(self, left):
         self._left = left
     

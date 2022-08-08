@@ -5,10 +5,11 @@ from Algorithms.InsertionSort import *
 from MapCreatorPygame.InsertionSortMapGenerator import *
 from AppLayOut.MainMenuLayOut import *
 
-insertionMap = InsertionSortMapGenerator()
-insertionSort(insertionMap)
+
+def main():
+    app = ButtonApp()
+    app.run()
+
 
 if __name__ == "__main__":
-    helloKivy = HelloKivy()
-    helloKivy.run()
-    #main()
+    main()

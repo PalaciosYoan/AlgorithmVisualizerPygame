@@ -1,0 +1,53 @@
+WindowManager:
+    SelectionWindow:
+    BinarySearch:
+    InsertionSort:
+    
+
+<SelectionWindow>:
+    name: "Selection Window"
+    BoxLayout:
+        Button:
+            text: "Binary Search"
+            font_size: 32
+            on_release: 
+                app.root.current = "Binary Search"
+                root.manager.transition.direction = "right"
+        
+        Button:
+            text: "Insertion Sort"
+            font_size: 32
+            on_release: 
+                app.root.current = "Insertion Sort"
+                root.manager.transition.direction = "left"
+
+<BinarySearch>:
+    name: "Binary Search"
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+        
+
+        Button:
+            text: "Selection Window"
+            font_size: 12
+            on_release: 
+                app.root.current = "Selection Window"
+                root.manager.transition.direction = "left"
+
+<InsertionSort>:
+    name: "Insertion Sort"
+    BoxLayout:
+        orientation: "vertical"
+        size: root.width, root.height
+
+        Label:
+            text: "Insertion Sort"
+            font_size: 32
+
+        Button:
+            text: "Selection Window"
+            font_size: 32
+            on_release: 
+                app.root.current = "Selection Window"
+                root.manager.transition.direction = "right"

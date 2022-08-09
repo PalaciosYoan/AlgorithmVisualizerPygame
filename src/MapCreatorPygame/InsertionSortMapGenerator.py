@@ -6,13 +6,13 @@ class InsertionSortMapGenerator(object):
     the array will then start to sort itself
     """
     def __init__(self) -> None:
-        integerArrayInput = input("Please enter integers you want sorted. Type in End to stop inputting integers: ")
-        inputArray = []
-        while integerArrayInput != "End":
-            inputArray.append(int(integerArrayInput)) 
-            integerArrayInput = input()
-        self.array = inputArray
-        self.inputArraySize = len(inputArray)
+        # integerArrayInput = input("Please enter integers you want sorted. Type in End to stop inputting integers: ")
+        # inputArray = []
+        # while integerArrayInput != "End":
+        #     inputArray.append(int(integerArrayInput)) 
+        #     integerArrayInput = input()
+        self.array = [1,3,5,2,10,7,3]
+        self.inputArraySize = len(self.array)
 
     def getArray(self):
         return self.array

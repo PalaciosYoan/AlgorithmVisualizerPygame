@@ -16,10 +16,12 @@ from MapCreatorPygame.InsertionSortMapGenerator import *
 
 
 class ScreenManagement(ScreenManager):
+    stop = threading.Event()
     def __init__(self, **kwargs):
         super(ScreenManagement, self).__init__(**kwargs)
 
 class SelectionScreen(Screen):
+    stop = threading.Event()
     def __init__(self, **kwargs):
         super(SelectionScreen, self).__init__(**kwargs)
         screenLayout = BoxLayout(orientation = 'horizontal')
@@ -51,39 +53,45 @@ class InsertionSortScreen(Screen):
         self.styleLayout.add_widget(self.insertionLayout)
         insertionSortDescription = Label(text = "Insertion Sort Method", size_hint = (0.5, 0.25))
         self.styleLayout.add_widget(insertionSortDescription)
-        startButton = Button(text = 'Hello World', size_hint = (0.5, 0.25))
-        startButton.bind(on_press = self.start_second_thread)
-        self.styleLayout.add_widget(startButton)
+        self.startButton = Button(text = 'Click to start the Algorithm', size_hint = (0.5, 0.25))
+        self.startButton.bind(on_press = self.start_second_thread)
+        self.styleLayout.add_widget(self.startButton)
         self.add_widget(self.styleLayout)
 
     def start_second_thread(self, *args):
-        threading.Thread(target=self.pressed).start()
+        self.styleLayout.remove_widget(self.startButton)
+        threading.Thread(target=self.insertionSortAlgorithm).start()
 
-    def pressed(self, *args):
+    def insertionSortAlgorithm(self, *args):
         for index in range(1,self.insertionMap.getArraySize()):
             traversalIndex = index
             currentIndexForLayout = -1 * (traversalIndex + 1)
             previousIndexForLayout = -1 * traversalIndex
             Clock.schedule_once(partial(self.changeTextAndColor, currentIndexForLayout, previousIndexForLayout),0)
             time.sleep(1)
-            print("Comparing these two values Layout", self.insertionLayout.children[previousIndexForLayout].text, self.insertionLayout.children[currentIndexForLayout].text)
-            #print("Comparing these two values Print", self.insertionMap.valueAtIndex(traversalIndex - 1), self.insertionMap.valueAtIndex(traversalIndex))
 
             #swapping the values mentioned above if the previous value is larger than the current value
             while traversalIndex > 0 and self.insertionMap.valueAtIndex(traversalIndex - 1) > self.insertionMap.valueAtIndex(traversalIndex):
-                print("Swapping these two values Print:", self.insertionMap.valueAtIndex(traversalIndex - 1), self.insertionMap.valueAtIndex(traversalIndex))
-                #print("Swapping these two values Layout", self.insertionLayout.children[previousIndexForLayout].text, self.insertionLayout.children[currentIndexForLayout].text)
                 Clock.schedule_once(partial(self.swapTextAndChangeTextAndColor, traversalIndex, currentIndexForLayout, previousIndexForLayout),0)
                 time.sleep(1)
                 traversalIndex -= 1
                 currentIndexForLayout += 1
                 previousIndexForLayout += 1
             Clock.schedule_once(partial(self.changeColor, currentIndexForLayout, previousIndexForLayout),0)
+            if self.stop.is_set():
+                return
             time.sleep(1)
+        Clock.schedule_once(self.changeTextAndButton, 0)
+        if self.stop.is_set():
+                return
 
     @mainthread
+    def changeToSelectionScreen(self, *args):
+        self.manager.current = 'Selection Screen'
+    
+    @mainthread
     def changeTextAndColor(self, currentIndexForLayout, previousIndexForLayout, *args):
-        self.styleLayout.children[1].text = "Comparing these two values: " + self.insertionLayout.children[previousIndexForLayout].text + " and " + self.insertionLayout.children[currentIndexForLayout].text
+        self.styleLayout.children[0].text = "Comparing these two values: " + self.insertionLayout.children[previousIndexForLayout].text + " and " + self.insertionLayout.children[currentIndexForLayout].text
         self.insertionLayout.children[previousIndexForLayout].color = (0,1,0,1)
         self.insertionLayout.children[currentIndexForLayout].color = (0,1,0,1)
     
@@ -91,7 +99,7 @@ class InsertionSortScreen(Screen):
     def swapTextAndChangeTextAndColor(self, traversalIndex, currentIndexForLayout, previousIndexForLayout, *args):
         self.insertionLayout.children[previousIndexForLayout].color = (0,1,0,1)
         self.insertionLayout.children[currentIndexForLayout].color = (0,1,0,1)
-        self.styleLayout.children[1].text = "Swapping these two values: " + self.insertionLayout.children[previousIndexForLayout].text + " and " + self.insertionLayout.children[currentIndexForLayout].text
+        self.styleLayout.children[0].text = "Swapping these two values: " + self.insertionLayout.children[previousIndexForLayout].text + " and " + self.insertionLayout.children[currentIndexForLayout].text
         self.insertionMap.swapValuesAtIndices(traversalIndex - 1, traversalIndex)
         self.insertionLayout.children[previousIndexForLayout].text, self.insertionLayout.children[currentIndexForLayout].text = self.insertionLayout.children[currentIndexForLayout].text, self.insertionLayout.children[previousIndexForLayout].text
 
@@ -99,7 +107,14 @@ class InsertionSortScreen(Screen):
     def changeColor(self, currentIndexForLayout, previousIndexForLayout, *args):
         self.insertionLayout.children[previousIndexForLayout].color = (1,1,1,1)
         self.insertionLayout.children[currentIndexForLayout].color = (1,1,1,1)
-        
+    
+    @mainthread
+    def changeTextAndButton(self, *args):
+        self.styleLayout.children[0].text = "Finished! Click on the button to go back to the selection menu"
+        self.startButton.text = "Go back to Selection Menu"
+        self.styleLayout.add_widget(self.startButton)
+        self.startButton.bind(on_press = self.changeToSelectionScreen)
+
 class MyApp(App):
     def on_stop(self):
         self.root.stop.set()
@@ -114,29 +129,3 @@ class MyApp(App):
 #https://stackoverflow.com/questions/31639452/kivy-access-child-id
 #https://stackoverflow.com/questions/63867627/how-do-i-update-the-text-in-label-widget-within-the-for-loop
 #https://github.com/kivy/kivy/wiki/Working-with-Python-threads-inside-a-Kivy-application
-
-
-"""
-    def pressed(self, instance):
-        for index in range(1,self.insertionMap.getArraySize()):
-            traversalIndex = index
-            currentIndexForLayout = -1 * (traversalIndex + 1)
-            previousIndexForLayout = -1 * traversalIndex
-            self.insertionLayout.children[previousIndexForLayout].color = (0,1,0,1)
-            self.insertionLayout.children[currentIndexForLayout].color = (0,1,0,1)
-            self.styleLayout.children[1].text = "Comparing these two values: " + self.insertionLayout.children[previousIndexForLayout].text + " and " + self.insertionLayout.children[currentIndexForLayout].text
-            print("Comparing these two values Layout", self.insertionLayout.children[previousIndexForLayout].text, self.insertionLayout.children[currentIndexForLayout].text)
-            print("Comparing these two values Print", self.insertionMap.valueAtIndex(traversalIndex - 1), self.insertionMap.valueAtIndex(traversalIndex))
-
-            #swapping the values mentioned above if the previous value is larger than the current value
-            while traversalIndex > 0 and self.insertionMap.valueAtIndex(traversalIndex - 1) > self.insertionMap.valueAtIndex(traversalIndex):
-                print("Swapping these two values Print:", self.insertionMap.valueAtIndex(traversalIndex - 1), self.insertionMap.valueAtIndex(traversalIndex))
-                print("Swapping these two values Layout", self.insertionLayout.children[previousIndexForLayout].text, self.insertionLayout.children[currentIndexForLayout].text)
-                self.insertionMap.swapValuesAtIndices(traversalIndex - 1, traversalIndex)
-                self.insertionLayout.children[previousIndexForLayout].text, self.insertionLayout.children[currentIndexForLayout].text = self.insertionLayout.children[currentIndexForLayout].text, self.insertionLayout.children[previousIndexForLayout].text
-                self.insertionLayout.children[previousIndexForLayout].color = (1,1,1,1)
-                self.insertionLayout.children[currentIndexForLayout].color = (1,1,1,1)
-                traversalIndex -= 1
-                currentIndexForLayout += 1
-                previousIndexForLayout += 1
-"""

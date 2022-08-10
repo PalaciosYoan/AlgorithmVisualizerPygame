@@ -67,23 +67,29 @@ class InsertionSortScreen(Screen):
             traversalIndex = index
             currentIndexForLayout = -1 * (traversalIndex + 1)
             previousIndexForLayout = -1 * traversalIndex
+            staticCurrentIndexForLayout = currentIndexForLayout
+            numberTimesSwapped = 0
             Clock.schedule_once(partial(self.changeTextAndColor, currentIndexForLayout, previousIndexForLayout),0)
-            time.sleep(1)
+            time.sleep(2)
 
             #swapping the values mentioned above if the previous value is larger than the current value
+            print("before the swap: ", currentIndexForLayout, " " , previousIndexForLayout)
             while traversalIndex > 0 and self.insertionMap.valueAtIndex(traversalIndex - 1) > self.insertionMap.valueAtIndex(traversalIndex):
                 Clock.schedule_once(partial(self.swapTextAndChangeTextAndColor, traversalIndex, currentIndexForLayout, previousIndexForLayout),0)
-                time.sleep(1)
+                time.sleep(2)
                 traversalIndex -= 1
                 currentIndexForLayout += 1
                 previousIndexForLayout += 1
-            Clock.schedule_once(partial(self.changeColor, currentIndexForLayout, previousIndexForLayout),0)
+                numberTimesSwapped += 1
+            Clock.schedule_once(partial(self.changeColor, staticCurrentIndexForLayout, numberTimesSwapped),0)
+            print("After the swap: ", currentIndexForLayout, " " , previousIndexForLayout)
             if self.stop.is_set():
                 return
             time.sleep(1)
         Clock.schedule_once(self.changeTextAndButton, 0)
         if self.stop.is_set():
                 return
+
 
     @mainthread
     def changeToSelectionScreen(self, *args):
@@ -104,9 +110,16 @@ class InsertionSortScreen(Screen):
         self.insertionLayout.children[previousIndexForLayout].text, self.insertionLayout.children[currentIndexForLayout].text = self.insertionLayout.children[currentIndexForLayout].text, self.insertionLayout.children[previousIndexForLayout].text
 
     @mainthread
-    def changeColor(self, currentIndexForLayout, previousIndexForLayout, *args):
-        self.insertionLayout.children[previousIndexForLayout].color = (1,1,1,1)
-        self.insertionLayout.children[currentIndexForLayout].color = (1,1,1,1)
+    def changeColor(self, staticCurrentIndexForLayout, numberOfTimesSwapped, *args):
+        if numberOfTimesSwapped != 0:
+            while numberOfTimesSwapped >= 0:
+                self.insertionLayout.children[staticCurrentIndexForLayout].color = (1,1,1,1)
+                staticCurrentIndexForLayout += 1
+                numberOfTimesSwapped -= 1
+        else:
+            self.insertionLayout.children[staticCurrentIndexForLayout].color = (1,1,1,1)
+            self.insertionLayout.children[staticCurrentIndexForLayout + 1].color = (1,1,1,1)
+        
     
     @mainthread
     def changeTextAndButton(self, *args):
